@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String?
+  email     String   @unique
+  password  String
+  mobile    String?
+  dob       DateTime?
+  tob       String? // time of birth as string
+  pob       String?
+  gender    String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  submissions Submission[]
+  counseling  CounselingEntry[]
+  referrals   Referral[]
+}
+
+model Assignment {
+  id        String   @id @default(uuid())
+  title     String
+  type      String   // free|paid
+  questions Json
+  price     Int?     // cents
+  createdAt DateTime @default(now())
+}
+
+model Submission {
+  id           String   @id @default(uuid())
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  assignmentId String
+  user         User?      @relation(fields: [userId], references: [id])
+  userId       String?
+  answers      Json
+  score        Int?
+  createdAt    DateTime @default(now())
+}
+
+model Payment {
+  id               String   @id @default(uuid())
+  userId           String?
+  user             User?    @relation(fields: [userId], references: [id])
+  assignmentId     String?
+  amount           Int
+  currency         String  @default("INR")
+  status           String  @default("pending")
+  providerPaymentId String?
+  createdAt        DateTime @default(now())
+}
+
+model CounselingEntry {
+  id              String   @id @default(uuid())
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id])
+  selectedSymptoms Json
+  rating          Int?
+  notes           String?
+  createdAt       DateTime @default(now())
+}
+
+model Referral {
+  id        String @id @default(uuid())
+  code      String @unique
+  userId    String?
+  user      User?  @relation(fields: [userId], references: [id])
+  uses      Int    @default(0)
+  createdAt DateTime @default(now())
+}

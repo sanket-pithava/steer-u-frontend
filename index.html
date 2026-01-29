@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Google reCAPTCHA for Firebase Phone Authentication -->
+  <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/Astro.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta 
+    name="description" 
+    content="Future predictions, Vedic astrology, relationship, psychological counselling, therapy, mental health, steer your life" 
+  />
+
+  <title>Steer-U</title>
+  <style>
+    #google_translate_element {
+      display: none;
+    }
+
+    .goog-logo-link {
+      display: none !important;
+    }
+
+    .goog-te-gadget {
+      height: 0;
+      overflow: hidden;
+    }
+
+    .goog-te-banner-frame.skiptranslate {
+      display: none !important;
+    }
+
+    body {
+      top: 0 !important;
+    }
+    #translation-loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(2px);
+      z-index: 999999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #translation-loading-overlay.show {
+      display: flex;
+    }
+
+    .translation-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255, 255, 255, 0.25);
+      border-top-color: #f59e0b;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="translation-loading-overlay" aria-hidden="true" role="status">
+    <div class="translation-spinner"></div>
+  </div>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+  <script>
+    function googleTranslateElementInit() {
+      if (window.google && window.google.translate) {
+        new window.google.translate.TranslateElement(
+          {
+            pageLanguage: 'en',
+            includedLanguages: 'en,hi,es,fr,de,ar,zh-CN,ja,ko,ru,it,pt,tr,ta,te,bn,pa,gu,mr,ur',
+            layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+          },
+          'google_translate_element'
+        );
+      }
+    }
+  </script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+</html>
