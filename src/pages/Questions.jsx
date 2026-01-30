@@ -11,6 +11,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import LocationDropdown from "../components/common/LocationDropdown";
 
 
+
+
 const generateUniqueCode = (length = 8) => {
     return Math.random().toString(36).substring(2, 2 + length).toUpperCase();
 };
