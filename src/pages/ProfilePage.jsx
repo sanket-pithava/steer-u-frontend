@@ -6,7 +6,7 @@ import Navbar from "../components/layout/Navbar";
 import { AuthContext } from "../context/AuthContext";
 import { ChevronDown, ChevronUp, X, CheckCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import LocationDropdown from "../common/LocationDropdown";
+import LocationDropdown from "../components/common/LocationDropdown";
 
 
 const Popup = ({ message, show }) => {

@@ -8,7 +8,7 @@ import ReferralButton from "../components/features/referral/ReferralButton";
 import "../index.css";
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import LocationDropdown from "../common/LocationDropdown";
+import LocationDropdown from "../components/common/LocationDropdown";
 
 
 const generateUniqueCode = (length = 8) => {
