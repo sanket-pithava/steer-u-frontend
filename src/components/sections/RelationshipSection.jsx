@@ -4,6 +4,7 @@ import { CheckCircle, X, Lock, ChevronDown, ChevronUp } from "lucide-react";
 import api from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import LocationDropdown from "@/components/common/LocationDropdown";
 
 
 
@@ -448,7 +449,7 @@ const Relationship = () => {
                                 required
                             />
                             <p className="text-sm text-gray-200 mb-1">Place of Birth (City/Town, State, Country)</p>
-                            <input
+                            {/* <input
                                 type="text"
                                 name="placeOfBirth"
                                 value={selfData.placeOfBirth}
@@ -456,6 +457,12 @@ const Relationship = () => {
                                 placeholder="Place Of Birth *"
                                 className="w-full p-3 rounded-lg bg-white/20 placeholder-white/70 text-white focus:ring-2 focus:ring-orange-300 outline-none text-base"
                                 required
+                            /> */}
+                            <LocationDropdown
+                                value={selfData.placeOfBirth}
+                                onChange={(val) =>
+                                    setSelfData(prev => ({ ...prev, placeOfBirth: val }))
+                                }
                             />
 
                             {/* <LocationDropdown
@@ -509,7 +516,7 @@ const Relationship = () => {
                                 required
                             />
                             <p className="text-sm text-gray-200 mb-1">Place of Birth (City/Town, State, Country)</p>
-                            <input
+                            {/* <input
                                 type="text"
                                 name="placeOfBirth"
                                 value={otherData.placeOfBirth}
@@ -517,7 +524,14 @@ const Relationship = () => {
                                 placeholder="Place Of Birth*"
                                 className="w-full p-3 rounded-lg bg-white/20 placeholder-white/70 text-white focus:ring-2 focus:ring-orange-300 outline-none text-base"
                                 required
+                            /> */}
+                            <LocationDropdown
+                                value={otherData.placeOfBirth}
+                                onChange={(val) =>
+                                    setOtherData(prev => ({ ...prev, placeOfBirth: val }))
+                                }
                             />
+
                             {/* <LocationDropdown
                                 value={otherData.placeOfBirth}
                                 onChange={(val) =>
