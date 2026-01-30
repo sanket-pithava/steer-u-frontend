@@ -4,7 +4,7 @@ import { CheckCircle, X, Lock, ChevronDown, ChevronUp } from "lucide-react";
 import api from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import LocationDropdown from "@/components/common/LocationDropdown";
+import LocationDropdown from "../common/LocationDropdown.jsx";
 
 
 
