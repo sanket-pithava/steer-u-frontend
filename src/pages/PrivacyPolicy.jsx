@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 
+
 const cardStyle =
   "bg-gradient-to-b from-[#6b2400] via-[#f76822] to-[#f76822] " +
   "backdrop-blur-md border border-orange-400/20 text-white shadow-lg " +
