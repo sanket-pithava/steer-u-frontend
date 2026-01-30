@@ -99,34 +99,40 @@ const ProfilePage = () => {
         setTimeout(() => navigate("/login"), 1500);
     };
     const handleSubmitPersonal = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        try {
-            const profileData = {
-                dob,
-                placeOfBirth,
-                timeOfBirth,
-                gender,
-                phone: mobile,
-                email: email,
-                socialLogin: socialLogin
-            };
-            if (!mobile && !email && !socialLogin) {
-                showPopupMsg("Please fill in at least one primary contact method (Mobile, Email, or Social Login) to save your profile.");
-                return;
-            }
-            await api.put("/api/profile/update", profileData);
-            updateProfileData(profileData);
+    try {
+        const profileData = {
+            dob,
+            placeOfBirth,
+            timeOfBirth,
+            gender,
+            phone: mobile,
+            email: email,
+            socialLogin: socialLogin
+        };
 
-            showPopupMsg("Personal Info updated!");
-            if (location.state?.from) {
-                setTimeout(() => navigate(location.state.from), 1500);
-            }
-        } catch (error) {
-            console.error("Failed to update profile:", error);
-            showPopupMsg("Error updating profile. Please try again.");
+        if (!mobile && !email && !socialLogin) {
+            showPopupMsg("Please fill in at least one primary contact method (Mobile, Email, or Social Login) to save your profile.");
+            return;
         }
-    };
+
+        // 🔹 Call API to update profile
+        await api.put("/api/profile/update", profileData);
+
+        // 🔹 Merge updated data into profile context so LocationDropdown keeps the value
+        updateProfileData({ ...profile, ...profileData });
+
+        showPopupMsg("Personal Info updated!");
+
+        if (location.state?.from) {
+            setTimeout(() => navigate(location.state.from), 1500);
+        }
+    } catch (error) {
+        console.error("Failed to update profile:", error);
+        showPopupMsg("Error updating profile. Please try again.");
+    }
+};
     const togglePrediction = (index) => {
         setOpenPredictionIndex(openPredictionIndex === index ? null : index);
     };
