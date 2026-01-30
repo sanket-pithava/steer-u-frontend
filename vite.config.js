@@ -12,4 +12,7 @@ export default defineConfig({
   server: {
     historyApiFallback: true,
   },
+  optimizeDeps: {
+    include: ["country-state-city"], // ✅ Add this line
+  },
 });

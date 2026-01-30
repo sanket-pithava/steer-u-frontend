@@ -13,6 +13,7 @@
     "bootstrap": "^5.3.3",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.3.2",
+    "core-js": "^3.48.0",
     "country-state-city": "^3.2.1",
     "firebase": "^12.4.0",
     "framer-motion": "^10.18.0",
@@ -31,6 +32,7 @@
     "react-router-hash-link": "^2.4.3",
     "react-share": "^5.2.2",
     "recharts": "^2.15.4",
+    "regenerator-runtime": "^0.14.1",
     "tailwind-variants": "^3.1.0"
   },
   "devDependencies": {
