@@ -1,6 +1,6 @@
 // src/components/common/LocationDropdown.jsx
 import React, { useState, useEffect } from "react";
-import locationData from "../../data/location.json";
+import locationData from "../../Data/Location.json";
 
 
 const LocationDropdown = ({ value, onChange }) => {
