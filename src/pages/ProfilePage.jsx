@@ -6,7 +6,7 @@ import Navbar from "../components/layout/Navbar";
 import { AuthContext } from "../context/AuthContext";
 import { ChevronDown, ChevronUp, X, CheckCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import LocationDropdown from "../components/common/LocationDropdown";
 
 
 
@@ -229,17 +229,22 @@ const ProfilePage = () => {
                                     </div>
                                     <div>
                                         <label className="block text-gray-500 text-sm mb-1">Place Of Birth</label>
-                                        <input
+                                        {/* <input
                                             type="text" value={placeOfBirth} onChange={(e) => setPlaceOfBirth(e.target.value)}
                                             className="w-full px-4 py-3 border rounded-xl border-gray-300 focus:ring-2 focus:ring-orange-300 outline-none"
                                             placeholder="City, State, Country"
-                                        />
+                                        /> */}
                                         {/* <LocationDropdown
                                             value={selfData.placeOfBirth}
                                             onChange={(val) =>
                                                 setSelfData(prev => ({ ...prev, placeOfBirth: val }))
                                             }
-                                        /> */}
+                                        />
+                                         */}
+                                        <LocationDropdown
+                                            value={placeOfBirth}
+                                            onChange={setPlaceOfBirth}
+                                        />
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-6 mt-2">

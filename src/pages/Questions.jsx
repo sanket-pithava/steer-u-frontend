@@ -121,11 +121,9 @@ const DetailsModal = ({ show, onClose, onSubmit, details, setDetails, price, pro
                     <p className="text-sm text-gray-200 mb-1">Place of Birth (City/Town, State, Country)</p>
                     {/* <input type="text" name="placeOfBirth" placeholder="Place Of Birth *" value={details.placeOfBirth} onChange={handleChange} required className="p-3 rounded text-black text-base md:col-span-2 disabled:bg-gray-200 disabled:text-gray-500" disabled={details?.questionFor === 'self'} /> */}
                      <LocationDropdown
-                                value={selfData.placeOfBirth}
-                                onChange={(val) =>
-                                    setSelfData(prev => ({ ...prev, placeOfBirth: val }))
-                                }
-                            />
+                                            value={placeOfBirth}
+                                            onChange={setPlaceOfBirth}
+                                        />
                     <p className="text-sm text-yellow-100 italic md:col-span-2 text-center mt-2">Plz re-check your inputs for getting valid answers</p>
                     <div className="flex flex-col sm:flex-row justify-between items-center md:col-span-2 mt-4 gap-4">
                         <button type="button" onClick={onClose} className="bg-gray-200 text-black px-6 py-3 rounded-full font-bold hover:bg-gray-300 transition text-base w-full sm:w-auto">Cancel</button>
