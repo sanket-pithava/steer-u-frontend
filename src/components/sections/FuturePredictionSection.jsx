@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, X } from "lucide-react";
 import api from '../api'; // API helper import karein
+import { CurrencyContext } from '../../context/CurrencyContext';
+import { formatPrice } from '../../utils/priceUtils';
 
 // --- CUSTOM POPUP MODAL ---
 const PopupModal = ({ message, onClose, isError = false }) => (
@@ -23,6 +25,7 @@ const customPackages = [
   { id: 3, price: 1100, usd: 49, questions: 5, delivery: "within 1 week" },
 ];
 const FuturePredictionSection = () => {
+  const { region } = useContext(CurrencyContext);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [questions, setQuestions] = useState([]);
   
@@ -54,15 +57,17 @@ const FuturePredictionSection = () => {
         return;
     }
 
-    const amount = selectedPackage.price;
+    const baseAmount = selectedPackage.price;
+    const amount = region === 'IN' ? baseAmount : (baseAmount * 4) / 83;
+    const currency = region === 'IN' ? 'INR' : 'USD';
     const description = `${selectedPackage.questions} customised questions`;
 
     try {
-        const { data: { id: order_id, currency } } = await api.post('/api/payment/create-order', { amount: amount, receipt: `receipt_custom_pkg_${selectedPackage.id}` });
+        const { data: { id: order_id } } = await api.post('/api/payment/create-order', { amount: amount * 100, currency, receipt: `receipt_custom_pkg_${selectedPackage.id}` });
         
         const options = {
             key: "rzp_test_RPNPg6A7yl1KPA",
-            amount: amount,
+            amount: amount * 100,
             currency,
             name: "Astro App Custom Package",
             description: description,
@@ -75,7 +80,9 @@ const FuturePredictionSection = () => {
                     await api.post('/api/custom-questions/save', { 
                         packageDetails: selectedPackage,
                         questionsList: questions,
-                        paymentId: response.razorpay_payment_id
+                        paymentId: response.razorpay_payment_id,
+                        amountPaid: amount,
+                        currency
                     });
 
                     showSuccessPopup("Payment successful! Your questions have been submitted.");
@@ -132,7 +139,7 @@ const FuturePredictionSection = () => {
               className="cursor-pointer bg-gradient-to-b from-[#6b2400] via-[#f76822] to-[#f76822] border border-orange-300 rounded-2xl p-6 shadow-lg text-center hover:scale-105 transition-transform duration-300"
             >
               <h3 className="text-2xl font-bold mb-2">
-                ₹{pkg.price} (${pkg.usd})
+                {formatPrice(pkg.price, region)}
               </h3>
               <p className="text-gray-200">
                 {pkg.questions} customised questions with answers delivered{" "}
@@ -145,7 +152,7 @@ const FuturePredictionSection = () => {
         /* Question Input Form */
         <div className="max-w-3xl mx-auto bg-white text-black p-6 rounded-2xl shadow-lg">
           <h3 className="text-2xl font-bold text-center text-orange-600 mb-4">
-            ₹{selectedPackage.price} (${selectedPackage.usd})
+            {formatPrice(selectedPackage.price, region)}
           </h3>
           <p className="text-center text-gray-700 mb-6">
             {selectedPackage.questions} customised questions with answers{" "}
@@ -181,7 +188,7 @@ const FuturePredictionSection = () => {
               disabled={isLoading}
               className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl mt-6 hover:bg-orange-700 transition disabled:opacity-50"
             >
-              {isLoading ? "Processing..." : `Proceed to Pay ₹${selectedPackage.price}`}
+              {isLoading ? "Processing..." : `Proceed to Pay ${formatPrice(selectedPackage.price, region)}`}
             </button>
           </form>
 

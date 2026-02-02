@@ -5,6 +5,8 @@ import Footer from "../components/layout/Footer";
 import Navbar from "../components/layout/Navbar";
 import api from "../services/api";
 import { AuthContext } from "../context/AuthContext";
+import { CurrencyContext } from "../context/CurrencyContext";
+import { formatPrice } from "../utils/priceUtils";
 import { useNavigate, useLocation } from 'react-router-dom'; // Import navigation hooks
 import axios from "axios";
 
@@ -98,21 +100,11 @@ const FuturePredictionSection = ({ isAuthenticated, showErrorPopup, showSuccessP
     const [questions, setQuestions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isIndian, setIsIndian] = useState(true);
+    const { region } = useContext(CurrencyContext);
 
     useEffect(() => {
-        const checkLocation = async () => {
-            try {
-                const response = await axios.get("https://ipapi.co/json/");
-                if (response.data.country_code !== "IN") {
-                    setIsIndian(false);
-                }
-            } catch (error) {
-                console.error("Error fetching location:", error);
-                // Default to Indian if check fails
-            }
-        };
-        checkLocation();
-    }, []);
+        setIsIndian(region === 'IN');
+    }, [region]);
 
     const getPriceDetails = (basePriceInr) => {
         if (isIndian) {
@@ -152,7 +144,7 @@ const FuturePredictionSection = ({ isAuthenticated, showErrorPopup, showSuccessP
     };
 
     const displayCustomRazorpay = async () => {
-        const { chargeAmount } = getPriceDetails(selectedPackage.price);
+        const chargeAmount = isIndian ? selectedPackage.price : selectedPackage.price * 4;
         const amount = chargeAmount;
         const description = `${selectedPackage.questions} customised questions`;
 
@@ -164,8 +156,8 @@ const FuturePredictionSection = ({ isAuthenticated, showErrorPopup, showSuccessP
 
             const options = {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                amount: amount,
-                currency,
+                amount: amount * 100,
+                currency: isIndian ? 'INR' : 'USD',
                 name: "Steer-U App Custom Package",
                 description: description,
                 order_id: order_id,
@@ -226,7 +218,7 @@ const FuturePredictionSection = ({ isAuthenticated, showErrorPopup, showSuccessP
                             onClick={() => handleSelectPackage(pkg)}
                             className="cursor-pointer bg-gradient-to-b from-[#6b2400] via-[#f76822] to-[#f76822] border border-orange-300 rounded-2xl p-6 shadow-lg text-center hover:scale-105 transition-transform duration-300"
                         >
-                            <h3 className="text-2xl font-bold mb-2">{getPriceDetails(pkg.price).display}</h3>
+                            <h3 className="text-2xl font-bold mb-2">{formatPrice(pkg.price, region)}</h3>
                             <p className="text-xs text-yellow-200 mb-2">(*tax included)</p>
                             <p className="text-gray-200">{pkg.questions} customised questions with answers delivered {pkg.delivery}</p>
                         </div>
@@ -234,7 +226,7 @@ const FuturePredictionSection = ({ isAuthenticated, showErrorPopup, showSuccessP
                 </div>
             ) : (
                 <div className="max-w-3xl mx-auto bg-white text-black p-6 rounded-2xl shadow-lg">
-                    <h3 className="text-2xl font-bold text-center text-orange-600 mb-4">{getPriceDetails(selectedPackage.price).display}</h3>
+                    <h3 className="text-2xl font-bold text-center text-orange-600 mb-4">{formatPrice(selectedPackage.price, region)}</h3>
                     <p className="text-center text-gray-700 mb-6">{selectedPackage.questions} customised questions with answers {selectedPackage.delivery}</p>
                     <form onSubmit={handleSubmit}>
                         <div className="space-y-4">
@@ -254,7 +246,7 @@ const FuturePredictionSection = ({ isAuthenticated, showErrorPopup, showSuccessP
                             ))}
                         </div>
                         <button type="submit" disabled={isLoading} className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl mt-6 hover:bg-orange-700 transition disabled:opacity-50">
-                            {isLoading ? "Processing..." : `Proceed to Pay ${getPriceDetails(selectedPackage.price).display}`}
+                            {isLoading ? "Processing..." : `Proceed to Pay ${formatPrice(selectedPackage.price, region)}`}
                         </button>
                     </form>
                     <button onClick={() => setSelectedPackage(null)} className="w-full text-gray-600 font-semibold py-3 mt-3 hover:underline">
@@ -276,6 +268,8 @@ const PackageTherapistModal = ({
     isIndian
 }) => {
     const [selectedTherapistId, setSelectedTherapistId] = useState(null);
+
+    const { region } = useContext(CurrencyContext);
 
 
 
@@ -312,9 +306,9 @@ const PackageTherapistModal = ({
     }
 
     // Calculate display values
-    const finalPriceDetails = getPriceDetails(finalPrice);
-    const originalPriceDetails = getPriceDetails(originalPrice);
-    const feeDetails = selectedTherapist ? getPriceDetails(selectedTherapist.fee) : { display: `₹${selectedTherapist?.fee || 0}`, chargeAmount: 0 };
+    const finalPriceDetails = { display: formatPrice(finalPrice, region), chargeAmount: finalPrice };
+    const originalPriceDetails = { display: formatPrice(originalPrice, region), chargeAmount: originalPrice };
+    const feeDetails = selectedTherapist ? { display: formatPrice(selectedTherapist.fee, region), chargeAmount: selectedTherapist.fee } : { display: formatPrice(0, region), chargeAmount: 0 };
 
     const handleSubmit = () => {
         if (!selectedTherapist) {
@@ -327,7 +321,7 @@ const PackageTherapistModal = ({
             price: finalPrice,
             pack: `${packageDeal.pack} (${selectedTherapist.name})`,
             description: `${packageDeal.sessions} sessions for ${selectedTherapist.name}`,
-            details: [...packageDeal.details, `Base Price: ₹${selectedTherapist.fee}/session`],
+            details: [...packageDeal.details, `Base Price: ${formatPrice(selectedTherapist.fee, region)}/session`],
         };
 
         onPaymentStart(dynamicPlan);
@@ -358,7 +352,7 @@ const PackageTherapistModal = ({
                             />
                             <div className="ml-4">
                                 <p className="font-semibold">{therapist.name}</p>
-                                <p className="text-sm text-gray-600">{getPriceDetails(therapist.fee).display} / session</p>
+                                <p className="text-sm text-gray-600">{formatPrice(therapist.fee, region)} / session</p>
                                 <p className="text-xs text-gray-500">{therapist.description}</p>
                             </div>
                         </label>
@@ -379,7 +373,7 @@ const PackageTherapistModal = ({
                         disabled={!selectedTherapist}
                         className="bg-orange-600 text-white px-6 py-3 rounded-full font-bold hover:bg-orange-700 transition disabled:opacity-50"
                     >
-                        Proceed to Pay {finalPrice > 0 ? getPriceDetails(finalPrice).display : '...'}
+                        Proceed to Pay {finalPrice > 0 ? formatPrice(finalPrice, region) : '...'}
                     </button>
                 </div>
             </motion.div>
@@ -395,6 +389,8 @@ const PricingPage = () => {
     const [showForm, setShowForm] = useState(false);
     const [isIndian, setIsIndian] = useState(true);
     const [mapPosition, setMapPosition] = useState([20.5937, 78.9629]); // Default India center
+
+    const { region } = useContext(CurrencyContext);
 
     // Component to handle map clicks
     const LocationSelector = () => {
@@ -590,7 +586,7 @@ const PricingPage = () => {
             // We need to apply the multiplier here for the actual charge.
 
             // Let's assume input 'plan.price' is always the Base INR amount we want to charge based on.
-            amountInRupees = getPriceDetails(plan.price).chargeAmount;
+            amountInRupees = region === 'IN' ? plan.price : plan.price * 4;
         }
 
 
@@ -605,8 +601,8 @@ const PricingPage = () => {
 
             const options = {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                amount: amountInRupees,
-                currency,
+                amount: amountInRupees * 100,
+                currency: region === 'IN' ? 'INR' : 'USD',
                 name: "Steer-U App Plan",
                 description,
                 order_id,
@@ -625,6 +621,7 @@ const PricingPage = () => {
                             slot: "N/A",
                             paymentId: response.razorpay_payment_id,
                             planDetails: plan,
+                            currency: region === 'IN' ? 'INR' : 'USD',
                         };
                         await api.post("/api/bookings/create", {
                             bookingDetails: bookingData,
@@ -781,7 +778,7 @@ const PricingPage = () => {
                         <motion.div key={plan.id} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true }} className="bg-gradient-to-b from-[#6b2400] via-[#f76822] to-[#f76822] text-white border border-orange-400/30 rounded-2xl p-6 shadow-lg hover:scale-105 hover:shadow-2xl transition-transform duration-300 flex flex-col">
                             <div className="flex-grow">
                                 <div className="mb-4 text-center">
-                                    <h2 className="text-4xl font-bold text-white">{getPriceDetails(plan.price).display} <span className="text-gray-400 line-through ml-2 text-lg">{getPriceDetails(plan.oldPrice).display}</span></h2>
+                                    <h2 className="text-4xl font-bold text-white">{formatPrice(plan.price, region)} <span className="text-gray-400 line-through ml-2 text-lg">{formatPrice(plan.oldPrice, region)}</span></h2>
                                     <p className="text-orange-300 text-sm">{plan.title}</p>
                                     <p className="text-xs text-green-200 mt-1">(*tax included)</p>
                                 </div>
