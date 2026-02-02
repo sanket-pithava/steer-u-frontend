@@ -62,31 +62,6 @@ const therapistsForModal = [
 
 ];
 
-const tierMultipliers = {
-  junior: 1200 / 7200,
-  senior: 1500 / 7200,
-  'super-senior-1': 1800 / 7200,
-  'super-senior-2': 2000 / 7200,
-  expert: 2500 / 7200,
-};
-
-const oldMultipliers = {
-  junior: 1500 / 7200,
-  senior: 2000 / 7200,
-  'super-senior-1': 2500 / 7200,
-  'super-senior-2': 2800 / 7200,
-  expert: 3200 / 7200,
-};
-
-const therapistMultipliers = {
-  1: 2000 / 7200, // Ruchi Goyal
-  2: 1500 / 7200,
-  3: 1500 / 7200,
-  4: 1500 / 7200,
-  5: 1500 / 7200,
-  6: 1500 / 7200,
-};
-
 // --- 🌟 UPDATED POPUP MODAL (Accepts custom action) 🌟 ---
 const PopupModal = ({ message, onClose, isError = false, onConfirmAction }) => (
     <AnimatePresence>

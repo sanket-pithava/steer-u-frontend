@@ -45,38 +45,6 @@ const AssignmentPage = () => {
   const [selectedTest, setSelectedTest] = useState(null);
   const [answer, setAnswer] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pricing, setPricing] = useState(null);
-  const [pricingLoading, setPricingLoading] = useState(true);
-  const [pricingError, setPricingError] = useState(null);
-
-  useEffect(() => {
-    const loadPricing = async () => {
-      try {
-        const data = await fetchPricing();
-        setPricing(data);
-      } catch (error) {
-        if (error.response?.status === 401) {
-          setPricingError('Please log in to view assessments.');
-        } else {
-          setPricingError('Failed to load pricing. Please try again.');
-        }
-      } finally {
-        setPricingLoading(false);
-      }
-    };
-    loadPricing();
-  }, []);
-
-  if (pricingLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
-  if (pricingError) return <div className="min-h-screen flex items-center justify-center">{pricingError}</div>
-
-  const basePrice = pricing.price;
-  const currencySymbol = pricing.currency === 'INR' ? '₹' : '$';
-  const dynamicPaidAssessments = paidAssessments.map(a => ({
-    ...a,
-    price: Math.round(basePrice * (a.price / 7200)),
-  }));
-
   const paidAssessments = [
     { name: "Learning Pattern", price: 800 },
     { name: "Memory", price: 1500 },
@@ -129,7 +97,7 @@ const AssignmentPage = () => {
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: assessment.price * 100,
-        currency: pricing.currency,
+        currency,
         name: "Psychological Assessment",
         description: assessment.name,
         order_id,
@@ -248,7 +216,7 @@ const AssignmentPage = () => {
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
-              {dynamicPaidAssessments.map((a, index) => (
+              {paidAssessments.map((a, index) => (
                 <div
                   key={index}
                   className="flex items-center justify-between bg-orange-500/90 hover:bg-orange-600 text-white rounded-xl p-5 cursor-pointer transition-all duration-200 shadow-md"
@@ -261,7 +229,7 @@ const AssignmentPage = () => {
                   <div className="flex flex-col">
                     <span className="font-semibold text-lg">{a.name}</span>
                     <span className="text-sm opacity-90">
-                      {a.price === 0 ? "Free" : `${currencySymbol}${a.price}`}
+                      {a.price === 0 ? "Free" : `₹${a.price}`}
                     </span>
                   </div>
 
