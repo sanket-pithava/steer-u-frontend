@@ -8,6 +8,7 @@ import Footer from "../components/layout/Footer";
 import Navbar from "../components/layout/Navbar";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { fetchPricing } from "../services/pricing";
 
 // ... (initialIntakeFormState and PopupModal remain unchanged) ...
 
@@ -103,6 +104,10 @@ const PaidTherapy = () => {
     },
   ];
 
+  const [pricing, setPricing] = useState(null);
+  const [pricingLoading, setPricingLoading] = useState(true);
+  const [pricingError, setPricingError] = useState(null);
+
   const [date, setDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState("");
   const [showCalendar, setShowCalendar] = useState(false);
@@ -120,6 +125,24 @@ const PaidTherapy = () => {
   const [popupMessage, setPopupMessage] = useState(null);
   const [isErrorPopup, setIsErrorPopup] = useState(false);
 
+  useEffect(() => {
+    const loadPricing = async () => {
+      try {
+        const data = await fetchPricing();
+        setPricing(data);
+      } catch (error) {
+        if (error.response?.status === 401) {
+          setPricingError('Please log in to view therapy options.');
+        } else {
+          setPricingError('Failed to load pricing. Please try again.');
+        }
+      } finally {
+        setPricingLoading(false);
+      }
+    };
+    loadPricing();
+  }, []);
+
   const showErrorPopup = (msg) => {
     setIsErrorPopup(true);
     setPopupMessage(msg);
@@ -129,6 +152,17 @@ const PaidTherapy = () => {
     setIsErrorPopup(false);
     setPopupMessage(msg);
   };
+
+  if (pricingLoading) return <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-brand-dark via-brand-orange to-brand-orange text-white">Loading therapy options...</div>
+  if (pricingError) return <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-brand-dark via-brand-orange to-brand-orange text-white">{pricingError}</div>
+
+  const basePrice = pricing.price;
+  const currencySymbol = pricing.currency === 'INR' ? '₹' : '$';
+  const dynamicDoctors = doctors.map(d => ({
+    ...d,
+    fee: Math.round(basePrice * (d.fee / 7200)),
+    oldFee: Math.round(basePrice * (d.oldFee / 7200)),
+  }));
 
   const handleCheckCalendar = (doctor) => {
     if (localStorage.getItem("authToken")) {
@@ -225,7 +259,7 @@ const PaidTherapy = () => {
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: amountInPaise,
-        currency,
+        currency: pricing.currency,
         name: "Steer-U Therapy Booking",
         description: `Booking for ${selectedDoctor.name}`,
         order_id,
@@ -242,7 +276,7 @@ const PaidTherapy = () => {
               ...formData,
               paymentId: paymentDetails.razorpay_payment_id,
               amountPaid: amount,
-              currency: currency,
+              currency: pricing.currency,
             };
 
             await api.post("/api/bookings/create", {
@@ -320,7 +354,7 @@ const PaidTherapy = () => {
         </p>
       </section>
       <div className="grid grid-cols-1 md:grid-cols-2 mt-8 lg:grid-cols-3 gap-6 px-4 pb-8">
-        {doctors.map((doctor) => (
+        {dynamicDoctors.map((doctor) => (
           <div
             key={doctor.id}
             className="bg-gradient-to-br from-[#064e3b] via-[#065f46] to-[#047857] rounded-xl p-4 relative border border-green-900 shadow-lg hover:shadow-2xl transition-all duration-300"
@@ -331,10 +365,10 @@ const PaidTherapy = () => {
               </h2>
               <div className="my-2">
                 <span className="text-2xl font-bold text-white">
-                  ₹{doctor.fee}
+                  {currencySymbol}{doctor.fee}
                 </span>
                 <span className="text-md text-gray-300 line-through ml-2">
-                  ₹{doctor.oldFee}
+                  {currencySymbol}{doctor.oldFee}
                 </span>
                 <span className="text-md text-green-200 ml-2">
                   /session
