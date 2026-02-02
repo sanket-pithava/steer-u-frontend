@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, X } from "lucide-react";
-import api from '../api'; // API helper import karein
+import api from '../../services/api'; // API helper import karein
 import { CurrencyContext } from '../../context/CurrencyContext';
 import { formatPrice } from '../../utils/priceUtils';
 

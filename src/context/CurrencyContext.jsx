@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const CurrencyContext = createContext();
+export const CurrencyContext = createContext();
 
 export const useCurrency = () => useContext(CurrencyContext);
 
