@@ -8,8 +8,6 @@ import Footer from "../components/layout/Footer";
 import Navbar from "../components/layout/Navbar";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { CurrencyContext } from "../context/CurrencyContext";
-import { formatPrice } from "../utils/priceUtils";
 
 // ... (initialIntakeFormState and PopupModal remain unchanged) ...
 
@@ -104,8 +102,6 @@ const PaidTherapy = () => {
       rating: 5, slots: ["10:00 AM", "12:00 PM", "3:00 PM"], unavailableDates: [new Date(2025, 9, 5), new Date(2025, 9, 12)],
     },
   ];
-
-  const { region } = useContext(CurrencyContext);
 
   const [date, setDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState("");
@@ -218,13 +214,11 @@ const PaidTherapy = () => {
     }
 
     try {
-      const amountInPaise = amount * 100;
-      const currency = region === 'IN' ? 'INR' : 'USD';
+      const amountInPaise = amount;
       const {
-        data: { id: order_id },
+        data: { id: order_id, currency },
       } = await api.post("/api/payment/create-order", {
         amount: amountInPaise,
-        currency,
         receipt: `receipt_booking_${Date.now()}`,
       });
 
@@ -248,7 +242,7 @@ const PaidTherapy = () => {
               ...formData,
               paymentId: paymentDetails.razorpay_payment_id,
               amountPaid: amount,
-              currency,
+              currency: currency,
             };
 
             await api.post("/api/bookings/create", {
@@ -297,7 +291,7 @@ const PaidTherapy = () => {
       return;
     }
 
-    const amount = region === 'IN' ? selectedDoctor.fee : (selectedDoctor.fee * 4) / 83;
+    const amount = selectedDoctor.fee;
     if (!amount || isNaN(amount)) {
       showErrorPopup("Could not determine the fee.");
       return;
@@ -337,10 +331,10 @@ const PaidTherapy = () => {
               </h2>
               <div className="my-2">
                 <span className="text-2xl font-bold text-white">
-                  {formatPrice(doctor.fee, region)}
+                  ₹{doctor.fee}
                 </span>
                 <span className="text-md text-gray-300 line-through ml-2">
-                  {formatPrice(doctor.oldFee, region)}
+                  ₹{doctor.oldFee}
                 </span>
                 <span className="text-md text-green-200 ml-2">
                   /session

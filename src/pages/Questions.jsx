@@ -7,8 +7,6 @@ import Navbar from "../components/layout/Navbar";
 import ReferralButton from "../components/features/referral/ReferralButton";
 import "../index.css";
 import { AuthContext } from '../context/AuthContext';
-import { CurrencyContext } from '../context/CurrencyContext';
-import { formatPrice } from '../utils/priceUtils';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 
@@ -138,11 +136,6 @@ const DetailsModal = ({ show, onClose, onSubmit, details, setDetails, price, pro
 };
 
 const QuestionAnswerPage = () => {
-    const { region } = useContext(CurrencyContext);
-    const questionPrices = {
-        '99rs': { price: 99, oldPrice: 149 },
-        '199rs': { price: 199, oldPrice: 249 }
-    };
     const [isComponentMounted, setIsComponentMounted] = useState(true);
     const [activeTab, setActiveTab] = useState("99rs");
     const [openQuestions, setOpenQuestions] = useState([]);
@@ -342,16 +335,14 @@ const QuestionAnswerPage = () => {
         }
     };
 
-    const displayRazorpay = async (baseAmount) => {
+    const displayRazorpay = async (amount) => {
         if (!localStorage.getItem('authToken')) { showErrorPopup("Please log in to make a payment."); return; }
         const questionText = questions[showPayment.tab][showPayment.index].text;
         try {
-            const amount = region === 'IN' ? baseAmount : (baseAmount * 4) / 83;
-            const currency = region === 'IN' ? 'INR' : 'USD';
-            const { data: { id: order_id } } = await api.post('/api/payment/create-order', { amount: amount * 100, currency, receipt: `receipt_question_${Date.now()}` });
+            const { data: { id: order_id, currency } } = await api.post('/api/payment/create-order', { amount: amount, receipt: `receipt_question_${Date.now()}` });
             const options = {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                amount: amount * 100, currency, name: "Steer-U Future Prediction Question", description: questionText, order_id,
+                amount: amount, currency, name: "Steer-U Future Prediction Question", description: questionText, order_id,
                 handler: async function (response) {
                     try {
                         await api.post('/api/payment/verify', { razorpay_payment_id: response.razorpay_payment_id, razorpay_order_id: response.razorpay_order_id, razorpay_signature: response.razorpay_signature });
@@ -437,7 +428,7 @@ const QuestionAnswerPage = () => {
             <div className="max-w-4xl mx-auto px-4 w-full text-center mb-4">
                 <div className="text-lg md:text-xl font-semibold text-yellow-300 bg-black/20 p-4 rounded-lg shadow-lg">
                     <p>
-                        Your first {formatPrice(99, region)} question is on us!
+                        Your first ₹99 question is on us!
                         <span className="block text-base text-white/90 mt-1">
                             ({hasUsedInitialFreeQuestion ? 1 : 0}/1 initial free question used)
                         </span>
@@ -464,7 +455,7 @@ const QuestionAnswerPage = () => {
                         key={tab} onClick={() => setActiveTab(tab)}
                         className={`px-4 py-2 md:px-6 md:py-3 rounded-full font-semibold shadow-md transition-all text-sm md:text-base ${activeTab === tab ? "bg-white text-orange-600" : "bg-orange-600 hover:bg-orange-500"}`}
                     >
-                        {tab === "99rs" ? <><span className="line-through opacity-80 mr-1">{formatPrice(questionPrices['99rs'].oldPrice, region)}</span> {formatPrice(questionPrices['99rs'].price, region)} Questions</> : <><span className="line-through opacity-80 mr-1">{formatPrice(questionPrices['199rs'].oldPrice, region)}</span> {formatPrice(questionPrices['199rs'].price, region)} Questions</>}
+                        {tab === "99rs" ? <><span className="line-through opacity-80 mr-1">₹149</span> ₹99 Questions</> : <><span className="line-through opacity-80 mr-1">₹249</span> ₹199 Questions</>}
                     </button>
                 ))}
             </div>
@@ -527,7 +518,7 @@ const QuestionAnswerPage = () => {
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
                     <div className="bg-white text-black p-6 rounded-xl w-80 text-center shadow-xl">
                         <h2 className="text-2xl font-bold mb-4">Unlock Question</h2>
-                        <p className="mb-4 text-base">Pay {formatPrice(showPayment.price, region)} to unlock this question.</p>
+                        <p className="mb-4 text-base">Pay ₹{showPayment.price} to unlock this question.</p>
                         <button onClick={handlePayment} className="bg-orange-600 text-white px-6 py-3 rounded-full w-full text-base font-semibold"> Proceed to Pay </button>
                         <button onClick={() => setShowPayment(null)} className="mt-3 text-base text-gray-600"> Cancel </button>
                     </div>

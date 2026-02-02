@@ -14,7 +14,6 @@ import PaidTherapy from "./pages/PaidTherapy";
 import CounsellingPage from "./pages/CounselingPage";
 import AssignmentPage from "./pages/AssignmentPage";
 import { AuthProvider } from "./context/AuthContext.jsx";
-import { CurrencyProvider } from "./context/CurrencyContext.jsx";
 import FreeTherapy from "./pages/FreeTherapy.jsx";
 import Hypnotherapy from "./pages/Hypnotherapy.jsx";
 import FAQPage from "./pages/FAQPage.jsx";
@@ -22,28 +21,26 @@ import LoginSuccessHandler from './components/features/auth/LoginSuccessHandler'
 
 function App() {
   return (
-    <CurrencyProvider>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/login-success" element={<LoginSuccessHandler />} />
-          <Route path="/signin" element={<Register />} />
-          <Route path="/feedback" element={<FeedbackSupport />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/Question" element={<Questions />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/paid" element={<PaidTherapy />} />
-          <Route path="/counselling" element={<CounsellingPage />} />
-          <Route path="/assignment" element={<AssignmentPage />} />
-          <Route path="/free-therapy" element={<FreeTherapy />} />
-          <Route path="/hypnotherapy" element={<Hypnotherapy />} />
-          <Route path="/faq" element={<FAQPage />} />
-        </Routes>
-      </AuthProvider>
-    </CurrencyProvider>
+    <AuthProvider>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/login-success" element={<LoginSuccessHandler />} />
+        <Route path="/signin" element={<Register />} />
+        <Route path="/feedback" element={<FeedbackSupport />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/Question" element={<Questions />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/paid" element={<PaidTherapy />} />
+        <Route path="/counselling" element={<CounsellingPage />} />
+        <Route path="/assignment" element={<AssignmentPage />} />
+        <Route path="/free-therapy" element={<FreeTherapy />} />
+        <Route path="/hypnotherapy" element={<Hypnotherapy />} />
+        <Route path="/faq" element={<FAQPage />} />
+      </Routes>
+    </AuthProvider>
   );
 }
 

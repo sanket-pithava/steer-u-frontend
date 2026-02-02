@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, X, Lock, ChevronDown, ChevronUp } from "lucide-react";
 import api from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
-import { CurrencyContext } from '../../context/CurrencyContext';
-import { formatPrice } from '../../utils/priceUtils';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LocationDropdown from "../common/LocationDropdown.jsx";
 
@@ -105,14 +103,12 @@ const QuestionsModal = ({ show, onClose, selfData, otherData, questions }) => {
 
     const displayRazorpay = async (question, index) => {
         if (!localStorage.getItem('authToken')) { showErrorPopup("Please log in to make a payment."); return; }
-        const baseAmount = 249;
-        const amount = region === 'IN' ? baseAmount : (baseAmount * 4) / 83;
-        const currency = region === 'IN' ? 'INR' : 'USD';
+        const amount = 249;
         try {
-            const { data: { id: order_id } } = await api.post('/api/payment/create-order', { amount: amount * 100, currency, receipt: `receipt_comp_${index}` });
+            const { data: { id: order_id, currency } } = await api.post('/api/payment/create-order', { amount: amount, receipt: `receipt_comp_${index}` });
             const options = {
                 key: "rzp_test_RPNPg6A7yl1KPA",
-                amount: amount * 100,
+                amount: amount,
                 currency, name: "Steer-U Relationship Compatibility", description: question.text, order_id,
                 handler: async function (response) {
                     try {
@@ -121,7 +117,6 @@ const QuestionsModal = ({ show, onClose, selfData, otherData, questions }) => {
                             bookingDetails: {
                                 plan: "Compatibility Question",
                                 price: amount,
-                                currency,
                                 date: new Date().toDateString(),
                                 slot: "N/A",
                                 paymentId: response.razorpay_payment_id,
@@ -193,7 +188,7 @@ const QuestionsModal = ({ show, onClose, selfData, otherData, questions }) => {
             >
                 <div className="flex-shrink-0 p-6 md:p-8 border-b border-orange-500">
                     <div className="flex justify-between items-center">
-                        <h2 className="text-2xl md:text-3xl font-bold text-white">Compatibility Questions ({formatPrice(249, region)} Each)</h2>
+                        <h2 className="text-2xl md:text-3xl font-bold text-white">Compatibility Questions (₹249 Each)</h2>
                         <button onClick={onClose} className="text-white hover:text-yellow-300"><X size={28} /></button>
                     </div>
                 </div>
@@ -207,7 +202,7 @@ const QuestionsModal = ({ show, onClose, selfData, otherData, questions }) => {
                                     <button onClick={() => isUnlocked ? toggleQuestion(idx) : displayRazorpay(q, idx)} className="w-full flex items-center justify-between p-4 md:p-5 text-left">
                                         <span className="text-base md:text-lg text-white">{q.text}</span>
                                         <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-                                            <span className="text-sm font-bold text-yellow-300">{formatPrice(249, region)}</span>
+                                            <span className="text-sm font-bold text-yellow-300">₹249</span>
                                             {isUnlocked ? (openQuestions.includes(idx) ? <ChevronUp className="text-white" /> : <ChevronDown className="text-white" />) : <Lock className="text-white" />}
                                         </div>
                                     </button>
@@ -257,7 +252,6 @@ const QuestionsModal = ({ show, onClose, selfData, otherData, questions }) => {
 };
 
 const Relationship = () => {
-    const { region } = useContext(CurrencyContext);
     const defaultDate = '2000-01-01';
     const [selfData, setSelfData] = useState({ timeOfBirth: "", placeOfBirth: "", dateOfBirth: defaultDate, gender: "" });
     const [otherData, setOtherData] = useState({ timeOfBirth: "", placeOfBirth: "", dateOfBirth: defaultDate, gender: "" });

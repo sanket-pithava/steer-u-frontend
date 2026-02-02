@@ -4,9 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "../services/api";
 import Footer from "../components/layout/Footer";
 import Navbar from "../components/layout/Navbar";
-import { useContext } from "react";
-import { CurrencyContext } from "../context/CurrencyContext";
-import { formatPrice } from "../utils/priceUtils";
 const PopupModal = ({ message, onClose }) => (
   <AnimatePresence>
     {message && (
@@ -42,7 +39,6 @@ const PopupModal = ({ message, onClose }) => (
 );
 
 const AssignmentPage = () => {
-  const { region } = useContext(CurrencyContext);
   const [assessmentType, setAssessmentType] = useState("free");
   const [popupMessage, setPopupMessage] = useState(null);
   const [unlockedTests, setUnlockedTests] = useState({});
@@ -88,22 +84,19 @@ const AssignmentPage = () => {
     }
 
     try {
-      const amount = region === 'IN' ? assessment.price : (assessment.price * 4) / 83;
-      const currency = region === 'IN' ? 'INR' : 'USD';
       const { data } = await api.post(
         "/api/payment/create-order",
         {
-          amount: amount * 100,
-          currency,
+          amount: assessment.price,
           receipt: `receipt_${assessment.name}_${new Date().getTime()}`,
         },
         { headers: { Authorization: `Bearer ${idToken}` } }
       );
 
-      const { id: order_id } = data;
+      const { id: order_id, currency } = data;
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: amount * 100,
+        amount: assessment.price * 100,
         currency,
         name: "Psychological Assessment",
         description: assessment.name,
@@ -236,7 +229,7 @@ const AssignmentPage = () => {
                   <div className="flex flex-col">
                     <span className="font-semibold text-lg">{a.name}</span>
                     <span className="text-sm opacity-90">
-                      {a.price === 0 ? "Free" : formatPrice(a.price, region)}
+                      {a.price === 0 ? "Free" : `₹${a.price}`}
                     </span>
                   </div>
 

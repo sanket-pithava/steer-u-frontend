@@ -3,7 +3,6 @@ import { useContext, useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../services/api";
 import { AuthContext } from "../context/AuthContext";
-import { CurrencyContext } from "../context/CurrencyContext";
 import { FaGoogle, FaApple, FaEnvelope, FaMobileAlt } from "react-icons/fa";
 import { generateRecaptcha } from '../services/firebase';
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
@@ -43,10 +42,8 @@ const Login = () => {
     const [emailSent, setEmailSent] = useState(false);
     const [storedEmail, setStoredEmail] = useState('');
     const [isLinkProcessing, setIsLinkProcessing] = useState(false);
-    const [region, setRegionState] = useState('');
 
     const { login } = useContext(AuthContext);
-    const { setRegion } = useContext(CurrencyContext);
     const actionCodeSettings = {
         url: window.location.origin + '/login',
         handleCodeInApp: true,
@@ -72,7 +69,6 @@ const Login = () => {
                         const res = await api.post("/api/auth/verify-firebase-token", { idToken });
 
                         login(res.data.token);
-                        setRegion(region);
                         window.localStorage.removeItem('emailForSignIn');
                         navigate("/");
 
@@ -113,11 +109,6 @@ const Login = () => {
     }, [isOtpModal]);
     const handleSendOtp = async () => {
         clearError();
-
-        if (!region) {
-            setErrorMsg("Please select your region.");
-            return;
-        }
 
         if (!is18Confirmed || !isTncConfirmed) {
             setErrorMsg("Age and T&C confirmations are mandatory.");
@@ -203,7 +194,6 @@ const Login = () => {
 
                 console.log("Firebase Login successful! Custom Token:", data.token);
                 login(data.token);
-                setRegion(region);
                 navigate("/");
 
             } catch (error) {
@@ -221,15 +211,10 @@ const Login = () => {
 
     const handleSocialLogin = (provider) => {
         clearError();
-        if (!region) {
-            setErrorMsg("Please select your region.");
-            return;
-        }
         if (!is18Confirmed || !isTncConfirmed) {
             setErrorMsg("Age and T&C confirmations are mandatory for Social Login as well.");
             return;
         }
-        localStorage.setItem('userRegion', region);
         const authUrl = `${BACKEND_BASE_URL}/api/auth/${provider}`;
         // Full-page redirect to backend OAuth endpoint; backend will redirect back to /login-success
         window.location.href = authUrl;
@@ -393,18 +378,6 @@ const Login = () => {
                                     />
                                 </div>
                             )}
-                            <div className="flex items-center bg-neutral text-dark rounded-full px-3 py-3">
-                                <select
-                                    value={region}
-                                    onChange={(e) => setRegionState(e.target.value)}
-                                    className="flex-1 bg-transparent outline-none text-sm text-dark"
-                                    required
-                                >
-                                    <option value="">Select Your Region *</option>
-                                    <option value="IN">Inside India (INR ₹)</option>
-                                    <option value="INT">Outside India (USD $)</option>
-                                </select>
-                            </div>
                             <div className="flex items-center gap-2 text-sm text-neutral/90">
                                 <input
                                     type="checkbox"

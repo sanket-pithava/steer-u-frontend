@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
@@ -8,8 +8,6 @@ import FAQSection from "../components/sections/FAQSection";
 import "../index.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { CurrencyContext } from "../context/CurrencyContext";
-import { formatPrice } from "../utils/priceUtils";
 
 const testimonials = [
       { name: "Mr. Keshavendra Singh", text: "The astrology predictions were highly accurate, and therapy sessions helped me overcome anxiety." },
@@ -67,12 +65,6 @@ const ScrollSection = ({ children, className }) => (
 );
 
 const Home = () => {
-      const { region } = useContext(CurrencyContext);
-      const packagePrices = [
-        { price: 1100, oldPrice: 1500, discount: '-27%', desc: '5 questions, answers in 1 week' },
-        { price: 2100, oldPrice: 2500, discount: '-16%', desc: '7 questions, answers in 2 days' },
-        { price: 5100, oldPrice: 6250, discount: '-18%', desc: '10 questions, answers in 2 hour' }
-      ];
       const [testimonialIndex, setTestimonialIndex] = useState(0);
       useEffect(() => {
             const timer = setInterval(() => {
@@ -212,13 +204,23 @@ const Home = () => {
                                                 Paid Packages
                                           </h3>
                                           <ul className="list-disc list-inside text-md space-y-1 text-gray-300">
-                                                {packagePrices.map((pkg, index) => (
-                                                  <li key={index}>
-                                                        {formatPrice(pkg.price, region)}{" "}
-                                                        <span className="line-through text-gray-400 ml-1">{formatPrice(pkg.oldPrice, region)}</span>{" "}
-                                                        <span className="text-[#FFD700] ml-1">{pkg.discount}</span>: {pkg.desc}
-                                                  </li>
-                                                ))}
+                                                <li>
+                                                      ₹1,100{" "}
+                                                      <span className="line-through text-gray-400 ml-1">₹1,500</span>{" "}
+                                                      <span className="text-[#FFD700] ml-1">-27%</span>: 5 questions, answers in 1 week
+                                                </li>
+
+                                                <li>
+                                                      ₹2,100{" "}
+                                                      <span className="line-through text-gray-400 ml-1">₹2,500</span>{" "}
+                                                      <span className="text-[#FFD700] ml-1">-16%</span>: 7 questions, answers in 2 days
+                                                </li>
+
+                                                <li>
+                                                      ₹5,100{" "}
+                                                      <span className="line-through text-gray-400 ml-1">₹6,250</span>{" "}
+                                                      <span className="text-[#FFD700] ml-1">-18%</span>: 10 questions, answers in 2 hour
+                                                </li>
                                           </ul>
                                     </div>
                               </div>
