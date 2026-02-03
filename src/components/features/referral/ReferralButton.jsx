@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { FiGift } from "react-icons/fi";
 import ReferralModal from "./ReferralModal";
-const ReferralButton = ({ userReferralCode, userReferralLink }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const isDisabled = !userReferralCode;
+// const ReferralButton = ({ userReferralCode, userReferralLink }) => {
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const [hovered, setHovered] = useState(false);
+//   const isDisabled = !userReferralCode;
 
-  return (
+  // return (
     // <div className="flex justify-center mt-6">
-      <div className="bg-white shadow-xl rounded-2xl p-6 max-w-lg text-center border border-[#f76822]">
+      // <div className="bg-white shadow-xl rounded-2xl p-6 max-w-lg text-center border border-[#f76822]">
         {/* <h2 className="text-2xl font-bold text-orange-700 mb-2">
           Invite Your Friends
         </h2> */}
@@ -37,8 +37,8 @@ const ReferralButton = ({ userReferralCode, userReferralLink }) => {
         referralCode={userReferralCode}
         referralLink={userReferralLink}
       />
-    </div>
-  );
-};
+    // </div>
+//   );
+// };
 
-export default ReferralButton;
+// export default ReferralButton;
