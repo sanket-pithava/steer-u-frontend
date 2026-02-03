@@ -25,11 +25,7 @@ router.post('/engine/get-prediction', verifyToken, async (req, res) => {
         const prediction = `Based on your birth details (DOB: ${userDetails.dob}, Time: ${userDetails.timeOfBirth}, Place: ${userDetails.placeOfBirth}), the answer to "${questionText}" is: This is a mock prediction. Please implement the actual engine.`;
         res.json({ success: true, prediction });
     } catch (error) {
-        console.error('Prediction engine error:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message || 'Engine configuration error. Please try again or contact support.'
-        });
+        res.status(500).json({ message: 'Engine configuration error.' });
     }
 });
 
