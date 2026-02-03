@@ -291,7 +291,7 @@ const QuestionAnswerPage = () => {
             setRedirectOnClose('/profile');
             return;
         } else if (e && (!detailsToSubmit.dob || !detailsToSubmit.timeOfBirth || !detailsToSubmit.placeOfBirth)) {
-            showErrorPopup("Please fill in all birth details to proceed.");
+            showErrorPopup("Please fill in all birth details (including Time of Birth) to proceed.");
             return;
         }
 
@@ -493,7 +493,7 @@ const QuestionAnswerPage = () => {
                                                         <p>Place: {detailsForThisQuestion.placeOfBirth}</p>
                                                     </div>
                                                 )}
-                                                <p className="text-base whitespace-pre-wrap">{answers[questionId]}</p>
+                                                <p className="text-base whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: answers[questionId] }}></p>
                                             </>
                                         ) : isLoadingAnswer === questionId ? (
                                             <div className="text-center text-white py-2">
