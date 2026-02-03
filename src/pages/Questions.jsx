@@ -120,7 +120,7 @@ const DetailsModal = ({ show, onClose, onSubmit, details, setDetails, price, pro
                     </select>
                     <p className="text-sm text-gray-200 mb-1">Place of Birth (City/Town, State, Country)</p>
                     <input type="text" name="placeOfBirth" placeholder="Place Of Birth *" value={details.placeOfBirth} onChange={handleChange} required className="p-3 rounded text-black text-base md:col-span-2 disabled:bg-gray-200 disabled:text-gray-500" disabled={details?.questionFor === 'self'} />
-                     {/* <LocationDropdown
+                    {/* <LocationDropdown
                                             value={placeOfBirth}
                                             onChange={setPlaceOfBirth}
                                         /> */}
@@ -493,7 +493,10 @@ const QuestionAnswerPage = () => {
                                                         <p>Place: {detailsForThisQuestion.placeOfBirth}</p>
                                                     </div>
                                                 )}
-                                                <p className="text-base whitespace-pre-wrap">{answers[questionId]}</p>
+                                                <p
+                                                    className="text-base whitespace-pre-wrap"
+                                                    dangerouslySetInnerHTML={{ __html: answers[questionId] }}
+                                                ></p>
                                             </>
                                         ) : isLoadingAnswer === questionId ? (
                                             <div className="text-center text-white py-2">
