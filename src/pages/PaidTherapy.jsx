@@ -75,7 +75,7 @@ const PaidTherapy = () => {
     },
     {
       id: 5, name: "Dr. Neelam Chejara", email: "drneelamclinic@gmail.com", meetLink: "https://meet.google.com/abc-xyz-pqr", fee: 1500, oldFee: 1800,
-      qualifications: "Mphil (Clinical Psychology), M.A.(clinical psychology) & B.A (psychology) Persuing PhD",
+      qualifications: "Ph.D., M.A. & B.A. (Psychology), PGDGC & PGDRP (Rehabilitation), MSW",
       experience: ["5.5 Years,", " RCI Registered"], languages: "English, Hindi, Rajasthani",
       expertise: ["Individual Counseling", "Couple Counseling", "Children / Adolescent", "Clinical Issues", "Group Counseling", "Addiction", "ERP OCD"],
       rating: 4.5, slots: ["10:00 AM", "12:00 PM", "3:00 PM"], unavailableDates: [new Date(2025, 9, 22), new Date(2025, 9, 27)],
