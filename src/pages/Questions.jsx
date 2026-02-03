@@ -120,7 +120,7 @@ const DetailsModal = ({ show, onClose, onSubmit, details, setDetails, price, pro
                     </select>
                     <p className="text-sm text-gray-200 mb-1">Place of Birth (City/Town, State, Country)</p>
                     <input type="text" name="placeOfBirth" placeholder="Place Of Birth *" value={details.placeOfBirth} onChange={handleChange} required className="p-3 rounded text-black text-base md:col-span-2 disabled:bg-gray-200 disabled:text-gray-500" disabled={details?.questionFor === 'self'} />
-                    {/* <LocationDropdown
+                     {/* <LocationDropdown
                                             value={placeOfBirth}
                                             onChange={setPlaceOfBirth}
                                         /> */}
@@ -425,7 +425,7 @@ const QuestionAnswerPage = () => {
                 </p>
             </section>
 
-            <div className="max-w-4xl mx-auto px-4 w-full text-center mb-4">
+            {/* <div className="max-w-4xl mx-auto px-4 w-full text-center mb-4">
                 <div className="text-lg md:text-xl font-semibold text-yellow-300 bg-black/20 p-4 rounded-lg shadow-lg">
                     <p>
                         Your first ₹99 question is on us!
@@ -447,7 +447,7 @@ const QuestionAnswerPage = () => {
                         </p>
                     )}
                 </div>
-            </div>
+            </div> */}
 
             <div className="flex justify-center gap-2 md:gap-3 mb-6 px-4 flex-wrap">
                 {["99rs", "199rs"].map((tab) => (
