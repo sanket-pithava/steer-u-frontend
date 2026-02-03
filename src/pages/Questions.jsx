@@ -425,7 +425,7 @@ const QuestionAnswerPage = () => {
                 </p>
             </section>
 
-            <div className="max-w-4xl mx-auto px-4 w-full text-center mb-4">
+            {/* <div className="max-w-4xl mx-auto px-4 w-full text-center mb-4">
                 <div className="text-lg md:text-xl font-semibold text-yellow-300 bg-black/20 p-4 rounded-lg shadow-lg">
                     <p>
                         Your first ₹99 question is on us!
@@ -447,7 +447,7 @@ const QuestionAnswerPage = () => {
                         </p>
                     )}
                 </div>
-            </div>
+            </div> */}
 
             <div className="flex justify-center gap-2 md:gap-3 mb-6 px-4 flex-wrap">
                 {["99rs", "199rs"].map((tab) => (
