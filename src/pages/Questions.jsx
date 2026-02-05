@@ -143,6 +143,7 @@ const QuestionAnswerPage = () => {
     const [showPayment, setShowPayment] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
+    const [currentFreeUseType, setCurrentFreeUseType] = useState(null);
 
     const [currentQuestionDetails, setCurrentQuestionDetails] = useState(null);
     const [tempDetails, setTempDetails] = useState({ gender: "male", dob: "", timeOfBirth: "", placeOfBirth: "", questionFor: "self" });
@@ -266,11 +267,14 @@ const QuestionAnswerPage = () => {
 
         if (useType) {
             setCurrentQuestionDetails({ tab, index, price });
-            handleDetailsSubmit(null, { isFreeUse: true, useType: useType });
+            setCurrentFreeUseType(useType);
+            setTempDetails({ gender: "male", dob: "", timeOfBirth: "", placeOfBirth: "", questionFor: "self" });
+            setShowDetailsModal(true);
             return;
         }
 
         setCurrentQuestionDetails({ tab, index, price });
+        setCurrentFreeUseType(null);
         setTempDetails({ gender: "male", dob: "", timeOfBirth: "", placeOfBirth: "", questionFor: "self" });
         setShowDetailsModal(true);
     };
@@ -286,7 +290,7 @@ const QuestionAnswerPage = () => {
         let detailsToSubmit = tempDetails;
         if (tempDetails.questionFor === 'self' && profile?.dob) {
             detailsToSubmit = { ...tempDetails, dob: profile.dob, timeOfBirth: profile.timeOfBirth, placeOfBirth: profile.placeOfBirth, gender: profile.gender || 'male' };
-        } else if (tempDetails.questionFor === 'self' && !profile?.dob && options.isFreeUse) {
+        } else if (tempDetails.questionFor === 'self' && !profile?.dob && (currentFreeUseType || options.isFreeUse)) {
             showErrorPopup("Please complete your profile details before using free credit.");
             setRedirectOnClose('/profile');
             return;
@@ -298,14 +302,18 @@ const QuestionAnswerPage = () => {
         setShowDetailsModal(false);
         setQuestionDetailsMap(prev => ({ ...prev, [questionId]: detailsToSubmit }));
 
-        if (options.isFreeUse) {
+        // Check if this is a free use question
+        const isFreeUseQuestion = currentFreeUseType !== null;
+        const freeUseType = currentFreeUseType || options.useType;
+
+        if (isFreeUseQuestion) {
             const updatePayload = {};
             let successMessage = '';
 
-            if (options.useType === 'initial') {
+            if (freeUseType === 'initial') {
                 updatePayload.hasUsedFreeQuestion = true;
                 successMessage = `Initial free question credit used! Fetching your answer...`;
-            } else if (options.useType === 'referral') {
+            } else if (freeUseType === 'referral') {
                 try {
                     await api.post('/api/profile/use-referral-credit');
                     successMessage = `Referral credit used! Fetching your answer...`;
@@ -318,7 +326,7 @@ const QuestionAnswerPage = () => {
             }
 
             try {
-                if (options.useType === 'initial') {
+                if (freeUseType === 'initial') {
                     await api.put("/api/profile/update", updatePayload);
                     updateProfileData({ ...profile, ...updatePayload });
                 }
@@ -328,6 +336,7 @@ const QuestionAnswerPage = () => {
 
             setUnlockedQuestions(prev => [...prev, questionId]);
             toggleQuestion(index);
+            setCurrentFreeUseType(null);
             fetchPrediction(tab, index, questionText, detailsToSubmit);
             showSuccessPopup(successMessage);
         } else {
@@ -346,9 +355,14 @@ const QuestionAnswerPage = () => {
                 handler: async function (response) {
                     try {
                         await api.post('/api/payment/verify', { razorpay_payment_id: response.razorpay_payment_id, razorpay_order_id: response.razorpay_order_id, razorpay_signature: response.razorpay_signature });
-                        showSuccessPopup("Payment successful! You can now get your answer.");
+                        showSuccessPopup("Payment successful! Fetching your answer...");
                         const questionId = `${showPayment.tab}-${showPayment.index}`;
+                        const questionText = questions[showPayment.tab][showPayment.index].text;
+                        const tabInfo = showPayment.tab;
+                        const indexInfo = showPayment.index;
+                        
                         setUnlockedQuestions(prev => [...prev, questionId]);
+                        setOpenQuestions(prev => [...prev, showPayment.index]);
 
                         let detailsToSubmit = tempDetails;
                         if (tempDetails.questionFor === 'self' && profile && profile.dob) {
@@ -357,6 +371,11 @@ const QuestionAnswerPage = () => {
                         setQuestionDetailsMap(prev => ({ ...prev, [questionId]: detailsToSubmit }));
                         setShowPayment(null);
                         setCurrentQuestionDetails(null);
+                        
+                        // Automatically fetch the prediction after payment
+                        setTimeout(() => {
+                            fetchPrediction(tabInfo, indexInfo, questionText, detailsToSubmit);
+                        }, 500);
                     } catch (error) { console.error("Payment verification failed:", error); showErrorPopup("Payment verification failed. Please contact support."); }
                 },
                 prefill: { name: "", email: "" }, theme: { color: "#f76822" },
