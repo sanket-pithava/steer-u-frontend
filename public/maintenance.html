@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Under Maintenance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .subtext {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 30px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+
+        .button-primary {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .button-primary:hover {
+            background-color: #764ba2;
+        }
+
+        .button-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .button-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        .footer {
+            font-size: 12px;
+            color: #bbb;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .description {
+                font-size: 16px;
+            }
+
+            .emoji {
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="emoji">🚧</span>
+        <h1>Website Under Maintenance</h1>
+        <p class="description">
+            We're currently performing scheduled maintenance to improve your experience.
+            We'll be back online shortly.
+        </p>
+        <p class="subtext">Thank you for your patience!</p>
+        
+        <div class="button-group">
+            <a href="/" class="button button-primary">Refresh Page</a>
+            <a href="https://twitter.com" class="button button-secondary">Follow Updates</a>
+        </div>
+        
+        <p class="footer">
+            Check back soon • Last updated: <span id="timestamp"></span>
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>
