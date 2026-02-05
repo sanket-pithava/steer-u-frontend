@@ -366,33 +366,63 @@ const QuestionAnswerPage = () => {
     };
     const handlePayment = () => { if (showPayment) { displayRazorpay(showPayment.price); } };
 
+    const convertDateFormat = (dateStr) => {
+        // Convert from DD-MM-YYYY to YYYY-MM-DD
+        if (!dateStr) return dateStr;
+        const parts = dateStr.split('-');
+        if (parts.length === 3 && parts[2].length === 4) {
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        return dateStr;
+    };
+
     const fetchPrediction = async (tab, index, questionText, passedDetails = null) => {
         const questionId = `${tab}-${index}`;
         if (!isComponentMounted) return;
         setIsLoadingAnswer(questionId);
         const detailsForThisQuestion = passedDetails || questionDetailsMap[questionId];
         if (!detailsForThisQuestion) { showErrorPopup("Internal error: Could not find birth details for this question. Please try again."); setIsLoadingAnswer(null); return; }
+        
         try {
-            const { data } = await api.post('/api/engine/get-prediction', { questionText: questionText, userDetails: detailsForThisQuestion });
+            // Transform the details to match the new API format
+            const birth_details = {
+                date: convertDateFormat(detailsForThisQuestion.dob),
+                time: detailsForThisQuestion.timeOfBirth,
+                place: detailsForThisQuestion.placeOfBirth,
+                gender: detailsForThisQuestion.gender || 'Male'
+            };
+
+            console.log("📤 Sending to analyze_astro endpoint:", {
+                birth_details,
+                questions: [questionText]
+            });
+
+            const { data } = await api.post('/api/engine/analyze_astro', { 
+                birth_details: birth_details,
+                questions: [questionText],
+                skip_llm: false
+            });
+            
             if (!isComponentMounted) return;
             setProgress(100);
             await new Promise(r => setTimeout(r, 500));
             if (!isComponentMounted) return;
 
-            if (data.success) {
-                let formattedAnswer = typeof data.prediction === 'object' ? JSON.stringify(data.prediction, null, 2) : String(data.prediction);
+            if (data.success && data.analysis && data.analysis.answers && data.analysis.answers.length > 0) {
+                const prediction = data.analysis.answers[0];
+                let formattedAnswer = typeof prediction === 'object' ? JSON.stringify(prediction, null, 2) : String(prediction);
                 formattedAnswer = formattedAnswer.replace(/\\n/g, '\n');
                 setAnswers(prev => ({ ...prev, [questionId]: formattedAnswer }));
                 try {
                     if (!isComponentMounted) return;
-                    await api.post('/api/predictions/save', { question: questionText, answer: data.prediction, details: detailsForThisQuestion });
+                    await api.post('/api/predictions/save', { question: questionText, answer: prediction, details: detailsForThisQuestion });
                 } catch (saveError) { console.error("Failed to save the prediction to Firebase:", saveError); }
-            } else { throw new Error(data.prediction || "Prediction was not successful."); }
+            } else { throw new Error(data.analysis?.answers?.[0] || "Prediction was not successful."); }
         } catch (error) {
             if (!isComponentMounted) return;
-            console.error("Error fetching prediction:", error);
+            console.error("❌ Error fetching prediction:", error);
             const gmLink = `https://mail.google.com/mail/?view=cm&fs=1&to=steeryourhappiness@gmail.com`;
-            const errorMessage = error.response?.data?.message || "Could not fetch the answer. Please try again.";
+            const errorMessage = error.response?.data?.message || error.message || "Could not fetch the answer. Please try again.";
             setAnswers(prev => ({ ...prev, [questionId]: `Sorry, something went wrong: ${errorMessage}. If the issue continues, please contact us at <a href="${gmLink}" target="_blank" rel="noopener noreferrer" style="color:#0e60da; font-weight:bold; text-decoration:underline;">steeryourhappiness@gmail.com</a>.` }));
         } finally { if (isComponentMounted) { setIsLoadingAnswer(null); } }
     };
