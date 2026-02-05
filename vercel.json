@@ -1,8 +1,13 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/maintenance.html"
+      "src": "/maintenance.html",
+      "headers": { "cache-control": "no-store" },
+      "continue": true
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/maintenance.html"
     }
   ]
 }
