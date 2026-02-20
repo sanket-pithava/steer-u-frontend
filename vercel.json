@@ -1,13 +1,15 @@
 {
   "routes": [
     {
-      "src": "/maintenance.html",
-      "headers": { "cache-control": "no-store" },
+      "src": "/index.html",
+      "headers": {
+        "cache-control": "no-store"
+      },
       "continue": true
     },
     {
       "src": "/(.*)",
-      "dest": "/maintenance.html"
+      "dest": "/index.html"
     }
   ]
 }
